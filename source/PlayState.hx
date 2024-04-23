@@ -1,40 +1,40 @@
 package;
 
-import haxe.iterators.StringIterator;
-import flixel.text.FlxText;
 import flixel.FlxG;
-import flixel.FlxState;
 import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import haxe.iterators.StringIterator;
 import openfl.Assets;
 
 class PlayState extends FlxState
-{	
-	//Public groups
+{
+	// Public groups
 	public var alphabet:Array<String> = [
 		"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
 	];
 
-	//Private groups
+	// Private groups
 	private var _tiles:Array<Tile>;
 	private var _selected:Array<String>;
 	private var _dictionary:Array<String>;
 
-	//Buttons
+	// Buttons
 	private var reset:FlxButton;
 	private var advance:FlxButton;
 	private var hide:FlxButton;
 
-	//Text
+	// Text
 	private var guessed:FlxText;
 	private var levtext:FlxText;
 	private var overtext:FlxText;
 
-	//Sprites
+	// Sprites
 	private var hangman:FlxSprite;
 
-	//Variables
+	// Variables
 	private var gameover:Bool;
 	private var correct:Bool;
 	private var word:String;
@@ -94,7 +94,7 @@ class PlayState extends FlxState
 	 * @param t 	The tile from which the letter originated.
 	 */
 	function testLetter(str:String, t:Tile):Void
-	{	
+	{
 		if (gameover || correct || _selected.contains(str))
 		{
 			return;
@@ -127,24 +127,24 @@ class PlayState extends FlxState
 			}
 		}
 
-		if (hit == false) 
+		if (hit == false)
 		{
 			turns--;
-			if (turns > 0) {
+			if (turns > 0)
+			{
 				hangman.loadGraphic("assets/images/hangman" + Std.string(turns) + ".png");
 			}
 		}
 
 		guessed.text = sb.toString();
-		if (guessed.text.indexOf("*") == -1) 
-		{	
+		if (guessed.text.indexOf("*") == -1)
+		{
 			correct = true;
 			reset = new FlxButton(100, FlxG.height - 75, "Next level?", resetCallback.bind(lev + 1));
 			add(reset);
 		}
-
-		if (turns == 0) 
-		{	
+		else if (turns == 0)
+		{
 			hangman.loadGraphic("assets/images/hangman" + Std.string(turns) + ".png");
 			guessed.text = word;
 			guessed.color = FlxColor.RED;
@@ -157,18 +157,21 @@ class PlayState extends FlxState
 			add(reset);
 		}
 	}
-	
+
 	/**
 	 * Resets the game state, either after a game over or advancing to a new level.
 	 * @param rlev 	The level that the game state is proceeding to. 1 if a reset, >1 otherwise.
 	 */
 	function resetCallback(rlev:Int):Void
-	{	
+	{
 		correct = false;
 		gameover = false;
 		turns = 9;
 		hangman.loadGraphic("assets/images/hangman" + Std.string(turns) + ".png");
-		overtext.destroy();
+		if (overtext != null)
+		{
+			overtext.destroy();
+		}
 		reset.destroy();
 		guessed.color = FlxColor.WHITE;
 		lev = rlev;
@@ -176,7 +179,8 @@ class PlayState extends FlxState
 		word = genWord();
 		guessed.text = "********";
 		levtext.text = "Level: " + Std.string(lev);
-		for (t in _tiles) {
+		for (t in _tiles)
+		{
 			t.label.color = FlxColor.WHITE;
 		}
 	}
